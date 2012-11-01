@@ -122,6 +122,15 @@ struct Matrix4 {
         w.x = 0; w.y = 0; w.z = 0; w.w = 1;
     }
     
+    void transform(vec3 in, vec3 &out)
+    {
+        vec3 tmp;
+        tmp.x = x.x * in.x + y.x * in.y + z.x * in.z;
+        tmp.y = x.y * in.x + y.y * in.y + z.y * in.z;
+        tmp.z = x.z * in.x + y.z * in.y + z.z * in.z;
+        out = tmp;
+    }
+    
     const T* Pointer() const
     {
         return &x.x;

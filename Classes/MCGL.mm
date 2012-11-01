@@ -33,7 +33,7 @@ GLenum matrixMode = GL_MODELVIEW;
     float in[4], out[4];
     //Calculation for inverting a matrix, compute projection x modelview
     //and store in A[16]
-    multiplyMatrices4by4OpenGL_FLOAT(A, projectionMatrix.Pointer(), (modelMatrix.top()*viewMatrix).Pointer());
+    multiplyMatrices4by4OpenGL_FLOAT(A, projectionMatrix.Pointer(), viewMatrix.Pointer());
     //Now compute the inverse of matrix A
     if(glhInvertMatrixf2(A, m)==0)
         return NO;
@@ -127,8 +127,7 @@ void multiplyMatrixByVector4by4OpenGL_FLOAT(float *resultvector, const float *ma
     resultvector[3]=matrix[3]*pvector[0]+matrix[7]*pvector[1]+matrix[11]*pvector[2]+matrix[15]*pvector[3];
 }
 
-//This code comes directly from GLU except that it is for float
-int glhInvertMatrixf2(float *m, float *out){
+int glhInvertMatrixf2(const float *m, float *out){
     float wtmp[4][8];
     float m0, m1, m2, m3, s;
     float *r0, *r1, *r2, *r3;
@@ -407,6 +406,18 @@ int glhInvertMatrixf2(float *m, float *out){
     modelMatrix.pop();
     glLoadMatrixf(viewMatrix.Pointer());
     glMultMatrixf(modelMatrix.top().Pointer());
+}
+
++(mat4)getCurrentViewMatrix{
+    return viewMatrix;
+}
+
++(mat4)getCurrentModelMatrix{
+    return modelMatrix.top();
+}
+
++(mat4)getCurrentProjectionMatrix{
+    return projectionMatrix;
 }
 
 @end

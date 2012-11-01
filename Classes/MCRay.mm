@@ -7,6 +7,7 @@
 //
 
 #import "MCRay.h"
+#import <math.h>
 
 @implementation MCRay
 
@@ -115,5 +116,20 @@
                 distanceVector.y*distanceVector.y +
                 distanceVector.z*distanceVector.z);
 }
+
+-(void)transformWithMatrix:(mat4) matrix{
+    vec3 v0 = vOrigin;
+    vec3 v1 = vOrigin;
+    v1 += vDirection;
+    
+    matrix.transform(v0, v0);
+    matrix.transform(v1, v1);
+    
+    vOrigin = v0;
+    v1 -= v0;
+    v1.Normalize();
+    vDirection = v1;
+}
+
 
 @end

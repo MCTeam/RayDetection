@@ -152,10 +152,13 @@ void RenderingEngine1::Initialize(int width, int height)
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
     
+    //You can see that instead of glMatrixMode(GL_PROJECTION) you use this function.
     [MCGL matrixMode:GL_PROJECTION];
     
+    //You can see that instead of glLoadIdentity() you use this function.
     [MCGL loadIdentity];
     
+    //Here, you can use this advanced function to set the projection matrix.
     [MCGL perspectiveWithFovy:51.0
                        aspect:(float)width/(float)height
                         zNear:5
@@ -174,19 +177,15 @@ void RenderingEngine1::Render()
     [MCGL matrixMode:GL_MODELVIEW];
     [MCGL loadIdentity];
     
+    //Set the eye's position.
+    //What you should remember is that before you set the eye, you should reset the matrix.
+    //Otherwise, the positon is in the model coordinate.
     [MCGL lookAtEyefv:vec3(0.0, 0.0, 7.0)
              centerfv:vec3(0.0, 0.0, 0.0)
                  upfv:vec3(0.0, 1.0, 0.0)];
     
-    
-//    [MCGL translateWithX:0.0
-//                       Y:0.0
-//                       Z:-7.0];
+    //Here, set the rotation
     [MCGL rotateWithQuaternion:m_orientation];
-    
-//    [MCGL translateWithX:0
-//                       Y:0
-//                       Z:-7];
     
     
     
@@ -231,18 +230,23 @@ void RenderingEngine1::OnFingerUp(ivec2 location){
 
 
 void RenderingEngine1::OnFingerDown(ivec2 location){
-    
+    //Once function down, update the ray.
     [ray updateWithScreenX:location.x
                    screenY:location.y];
-    
+    //Find the inverse of the model matrix
+    mat4 tmp;
+    glhInvertMatrixf2([MCGL getCurrentModelMatrix].Pointer(), &(tmp.x.x));
+    //Transform the ray by the inverse matrix.
+    [ray transformWithMatrix:tmp];
+    //three vertexs of the triangle, just for test.
     float V0[3] = {-1.0,1.0,1.0};
     float V1[3] = {-1.0,-1.0,1.0};
     float V2[3] = {1.0,-1.0,1.0};
-    
+    //OK, check the intersection and return the distance.
     float distance = [ray intersectWithTriangleMadeUpOfV0:V0
                                                    V1:V1
                                                    V2:V2];
-    
+    //print it.
     NSLog(@"%f",distance);
     
     m_fingerStart = location;
